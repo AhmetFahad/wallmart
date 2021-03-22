@@ -4,35 +4,27 @@ nokogiri = Nokogiri.HTML(content)
 product = {}
 
 #extract title
-product['title'] = nokogiri.at_css('.prod-ProductTitle').attr('content').strip
+product['title'] = nokogiri.at_css('.prod-ProductTitle').attr('content').text.strip
 
 #extract current price
 product['current_price'] = nokogiri.at_css('span.price-characteristic').attr('content').to_f
 
-#extract original price
-original_price_div = nokogiri.at_css('.price-old')
-original_price = original_price_div ? original_price_div.text.strip.gsub('$','').to_f : nil
-product['original_price'] = original_price == 0.0 ? nil : original_price
-
 #extract rating
-rating = nokogiri.at_css('.button-wrapper span').text.strip.to_f
+rating = nokogiri.at_css('.stars-container').attr('aria-label').text.match(/^\d*/).to_i
 product['rating'] = rating == 0 ? nil : rating
 
 #extract number of reviews
-review_text = nokogiri.at_css('seo-review-count').text.strip
-product['reviews_count'] = review_text
+review_text = okogiri.at_css('.stars-container').attr('aria-label').text.match(/^\d*/).to_i
+product['reviews_count'] = review_text == 0 ? nil : review_text
 
 #extract publisher
-product['publisher'] = nokogiri.at_css('a.prod-brandName')[4].text.strip
+product['publisher'] = nokogiri.at_css('a.prod-brandName')[0].text.strip
 
 #extract walmart item number
-product['walmart_number'] = nokogiri.at_css('.prod-productsecondaryinformation .wm-item-number').text.split('#').last.strip
+product['walmart_number'] = nokogiri.at_css('.valign-middle.s-margin-top display-inline div').attr("itemprop").text.split('#').last.strip
 
 #extract product image
-product['img_url'] = nokogiri.at_css('.prod-hero-image img')['src'].split('?').first
-
-#extract product categories
-product['categories'] = nokogiri.css('.breadcrumb-list li').collect{|li| li.text.strip.gsub('/','') }
+product['img_url'] = nokogiri.at_css('.prod-hero-image img').attr("src").split('?').first
 
 # specify the collection where this record will be stored
 product['_collection'] = 'products'
