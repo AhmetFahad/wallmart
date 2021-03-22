@@ -21,7 +21,7 @@ product['reviews_count'] = review_text == 0 ? nil : review_text
 product['publisher'] = nokogiri.at_css('a.prod-brandName')[0].text.strip
 
 #extract walmart item number
-product['walmart_number'] = nokogiri.at_css('.valign-middle.s-margin-top display-inline div').attr("itemprop").text.split('#').last.strip
+product['walmart_number'] = nokogiri.at_css('.valign-middle').text.split('#').last.strip
 
 #extract product image
 product['img_url'] = nokogiri.at_css('.prod-hero-image img').attr("src").split('?').first
